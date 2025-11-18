@@ -1,0 +1,1422 @@
+Classification Assignments
+Question 1)
+1. Medical Diagnosis Using SVM
+# Import essential Python libraries
+
+import pandas as pd                     # For data handling and manipulation
+import numpy as np                      # For numerical operations
+from sklearn import svm                 # For building SVM model
+from sklearn.model_selection import train_test_split  # To split dataset
+from sklearn.preprocessing import StandardScaler      # For feature scaling
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report  # Evaluation metrics
+import matplotlib.pyplot as plt         # For data visualization
+import seaborn as sns                   # For enhanced plotting style
+# Load the CSV dataset (ensure 'cancer.csv' or 'data.csv' is in the same folder as this notebook)
+df = pd.read_csv('F:\\IMCC\\Data Science\\DsMLFinalAssignment\\cancer.csv')
+
+# Display the first 5 rows to understand the data
+print("First 5 rows of the dataset:")
+print(df.head())
+
+# Check basic information about columns and datatypes
+print("\nDataset Info:")
+print(df.info())
+
+# Check if there are any missing values in each column
+print("\nMissing values in each column:")
+print(df.isnull().sum())
+# Drop unnecessary columns that are not useful for prediction
+df = df.drop(['id', 'Unnamed: 32'], axis=1, errors='ignore')
+
+# Convert 'diagnosis' column: 'M' = 1 (Malignant), 'B' = 0 (Benign)
+df['diagnosis'] = (df['diagnosis'] == 'M').astype(int)
+
+# Confirm the change
+print("\nUnique values in diagnosis column after conversion:")
+print(df['diagnosis'].unique())
+
+# Recheck for missing values after cleaning
+print("\nCheck missing values again after cleaning:")
+print(df.isnull().sum())
+# Separate input features (X) and target variable (y)
+X = df.drop('diagnosis', axis=1)
+y = df['diagnosis']
+
+# Display their shapes to confirm the split
+print("Shape of features (X):", X.shape)
+print("Shape of target (y):", y.shape)
+
+# Split dataset into training and testing data (80% training, 20% testing)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+print("Training samples:", X_train.shape[0])
+print("Testing samples:", X_test.shape[0])
+
+# SVM works better when all features are on the same scale
+scaler = StandardScaler()
+
+# Fit on training data and transform both training and test data
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+print("Feature scaling completed.")
+Initialize SVM classifier with RBF kernel
+model = svm.SVC(kernel='rbf', C=1.0)
+
+# Train the model on training data
+model.fit(X_train, y_train)
+
+print("Model training completed successfully.")
+# Predict on test data
+y_pred = model.predict(X_test)
+
+# Evaluate model performance
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=['Benign', 'Malignant']))
+# Create confusion matrix for better visualization
+cm = confusion_matrix(y_test, y_pred)
+
+plt.figure(figsize=(6,4))
+sns.heatmap(cm, annot=False, fmt='d', cmap='Blues',
+            xticklabels=['Benign', 'Malignant'],
+            yticklabels=['Benign', 'Malignant'])
+
+plt.title('Confusion Matrix - Breast Cancer Prediction using SVM')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+Question2)
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Step 1: Load dataset
+df = pd.read_csv("C:\\Users\\sai\\DataScineceFinalAssignment\\Loan_default.csv")  # <- rename file if needed
+# Step 2: Display basic info
+print("Dataset shape:", df.shape)
+print("\nColumns:", df.columns)
+print("\nMissing values:\n", df.isnull().sum())
+# Step 3: Select important features
+# Adjust based on column names in dataset
+features = ['Income', 'Age', 'LoanAmount', 'CreditScore', 'MonthsEmployed', 'DTIRatio']
+target = 'Default'  # or 'default' if present in dataset
+# Drop missing values for simplicity
+df = df[features + [target]].dropna()
+# Step 5: Separate inputs (X) and output (y)
+X = df[features]
+y = df[target]
+# Step 6: Split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Step 7: Scale features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# Step 8: Train Decision Tree Classifier
+model = DecisionTreeClassifier(criterion='gini', max_depth=5, random_state=42)
+model.fit(X_train, y_train)
+# Step 9: Predictions
+y_pred = model.predict(X_test)
+# Step 10: Evaluation
+print("✅ Accuracy:", accuracy_score(y_test, y_pred))
+print("\n📊 Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\n📄 Classification Report:\n", classification_report(y_test, y_pred, target_names=['No Default', 'Default']))
+# Step 12: Visualize Decision Tree
+plt.figure(figsize=(12,8))
+plot_tree(model, feature_names=features, class_names=['No Default', 'Default'], filled=True, rounded=True,fontsize=6,       # increase font size for readability
+    proportion=False,  # show absolute sample counts instead of proportions
+    precision=2 )
+plt.title('Decision Tree - Loan Default Prediction')
+plt.show()
+
+Question3)
+# Importing required libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Step 1: Load Dataset
+df = pd.read_csv("C:\\Users\\sai\\Desktop\\datasets\\diabetes.csv")  # download from Kaggle and put in same folder
+# Step 3: Define features and target
+features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness',
+            'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+target = 'Outcome'  # 1 = Diabetes Positive, 0 = Negative
+
+X = df[features]
+y = df[target]
+# Step 4: Split into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Step 5: Standardize the feature values
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+# Step 6: Initialize KNN classifier
+model = KNeighborsClassifier(n_neighbors=5)  # K=5 is a good starting point
+model.fit(X_train, y_train)
+# Step 7: Make predictions
+y_pred = model.predict(X_test)
+# Step 8: Evaluate the model
+print("✅ Accuracy:", accuracy_score(y_test, y_pred))
+print("\n📊 Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+print("\n📄 Classification Report:\n", classification_report(y_test, y_pred, target_names=['No Diabetes', 'Diabetes']))
+# Step 9: Visualize Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6,4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Purples',
+            xticklabels=['No Diabetes', 'Diabetes'],
+            yticklabels=['No Diabetes', 'Diabetes'])
+plt.title('Confusion Matrix - Diabetes Prediction (KNN)')
+plt.ylabel('Actual')
+plt.xlabel('Predicted')
+plt.show()
+# Step 10: Evaluate Accuracy for Different K Values
+k_values = range(1, 21)
+accuracies = []
+
+for k in k_values:
+    knn = KNeighborsClassifier(n_neighbors=k)
+    knn.fit(X_train, y_train)
+    y_pred_k = knn.predict(X_test)
+    accuracies.append(accuracy_score(y_test, y_pred_k))
+
+plt.figure(figsize=(8,5))
+plt.plot(k_values, accuracies, marker='o')
+plt.title('Accuracy vs Number of Neighbors (K)')
+plt.xlabel('K')
+plt.ylabel('Accuracy')
+plt.grid(True)
+plt.show()
+
+Question 4)
+# 📧 Email Spam Detection using Naive Bayes
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# --- Step 1: Load dataset ---
+df = pd.read_csv("C:\\Users\sai\Desktop\datasets\email.csv")   # Columns: Category, Message
+
+# --- Step 2: Clean data ---
+df.dropna(subset=['Message'], inplace=True)
+df.dropna(subset=['Category'], inplace=True)
+df['Category'] = df['Category'].map({'spam':1, 'ham':0})
+df.dropna(subset=['Category'], inplace=True)
+print(df['Category'])
+df['Message'] = df['Message'].str.replace(r'[^a-zA-Z\s]', '', regex=True).str.lower()
+
+# --- Step 3: Define features (X) and target (y) ---
+X = df['Message']       # Feature → Email text
+y = df['Category']      # Target → 1 = spam, 0 = ham
+
+# --- Step 4: Convert text to numerical TF-IDF vectors ---
+vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+X_vect = vectorizer.fit_transform(X)
+
+# --- Step 5: Split data into training and testing sets ---
+X_train, X_test, y_train, y_test = train_test_split(
+    X_vect, y, test_size=0.2, random_state=42, stratify=y
+)
+
+# --- Step 6: Train Naive Bayes model ---
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+# --- Step 7: Predict and evaluate ---
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred)*100, 2), "%")
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+# --- Step 8: Visualize confusion matrix ---
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(6,4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Greens',
+            xticklabels=['Ham','Spam'], yticklabels=['Ham','Spam'])
+plt.title('Confusion Matrix - Email Spam Detection (Naive Bayes)')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+Question 5)
+# 🛍️ Customer Sentiment Analysis using SVM
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# --- Step 1: Load dataset ---
+df = pd.read_csv("C:\\Users\\\\sai\\Desktop\\datasets\\reviews.csv")   # Columns: title, text, rating, etc.
+# --- Step 2: Clean and prepare data ---
+df['review'] = (df['title'].fillna('') + ' ' + df['text'].fillna('')).str.strip()
+df.dropna(subset=['review'], inplace=True)
+df['review'] = df['review'].str.replace(r'[^a-zA-Z\s]', '', regex=True).str.lower()
+print(df['rating'].value_counts())
+
+df['sentiment'] = df['rating'].apply(lambda x: 1 if x >= 4 else 0)
+print(df['rating'].value_counts())
+print(df['sentiment'].value_counts())
+
+# --- Step 3: Define features (X) and target (y) ---
+X = df['review']        # Feature → Customer review text
+y = df['sentiment']     # Target → 1 = positive, 0 = negative
+
+# --- Step 4: Convert text to numerical TF-IDF vectors ---
+vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+X_vect = vectorizer.fit_transform(X)
+# --- Step 5: Split data into training and testing sets ---
+X_train, X_test, y_train, y_test = train_test_split(
+    X_vect, y, test_size=0.2, random_state=42, stratify=y)
+
+# --- Step 6: Train SVM model ---
+model = SVC(kernel='linear', C=1.0, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Step 7: Predict and evaluate ---
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred)*100, 2), "%")
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+Question6)
+# 🏠 House Price Prediction Using Linear Regression
+# 🏠 House Price Prediction Using Linear Regression
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import r2_score, mean_squared_error
+
+# --- Step 1: Create dataset ---
+data = {
+    'location': ['urban','suburban','urban','rural','urban','suburban','rural','urban','suburban','urban'],
+    'size_sqft': [1000,1200,1500,1800,2000,2500,3000,3500,4000,4500],
+    'amenities': [3,4,5,6,5,6,7,8,9,9],
+    'price': [50,60,70,85,90,110,130,150,160,180]
+}
+df = pd.DataFrame(data)
+df.to_csv('house.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('house.csv')
+
+# --- Step 3: Handle missing values ---
+df.dropna(inplace=True)
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+# --- Step 4: Encode text columns ---
+le = LabelEncoder()
+df['location'] = le.fit_transform(df['location'])  # text → number
+
+# --- Step 5: Define features and target ---
+X = df[['location','size_sqft','amenities']]
+y = df['price']
+
+# --- Step 6: Scale & Split ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# --- Step 7: Train model ---
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# --- Step 8: Evaluate ---
+y_pred = model.predict(X_test)
+print("R²:", r2_score(y_test, y_pred))
+print("MSE:", mean_squared_error(y_test, y_pred))
+
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Price')
+plt.ylabel('Predicted Price')
+plt.title('House Price Prediction (Linear Regression)')
+plt.show()
+Question 7)
+# 📞 Customer Churn Prediction Using Logistic Regression
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import classification_report, confusion_matrix
+
+# --- Step 1: Create dataset ---
+data = {
+    'plan_type': ['basic','silver','gold','basic','gold','platinum','silver','gold','platinum','basic'],
+    'monthly_bill': [20,30,40,50,60,70,80,90,100,110],
+    'usage_gb': [5,10,15,20,25,30,35,40,45,50],
+    'churn': [1,1,1,0,1,0,0,0,0,0]
+}
+df = pd.DataFrame(data)
+df.to_csv('churn.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('churn.csv')
+
+# --- Step 3: Handle missing values ---
+df.dropna(inplace=True)
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+# --- Step 4: Encode text ---
+le = LabelEncoder()
+df['plan_type'] = le.fit_transform(df['plan_type'])
+
+# --- Step 5: Define X and y ---
+X = df[['plan_type','monthly_bill','usage_gb']]
+y = df['churn']
+
+# --- Step 6: Scale and Split ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# --- Step 7: Train model ---
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# --- Step 8: Evaluate ---
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap='Blues')
+plt.title('Churn Prediction Confusion Matrix')
+plt.show()
+Question 8)
+# 💹 Stock Price Forecasting Using Linear Regression
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import r2_score, mean_squared_error
+
+# --- Step 1: Create dataset ---
+data = {
+    'day': np.arange(1,11),
+    'sector': ['tech','tech','finance','finance','auto','auto','tech','finance','auto','tech'],
+    'price': [100,102,104,107,111,115,118,120,124,130]
+}
+df = pd.DataFrame(data)
+df.to_csv('stock.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('stock.csv')
+df.dropna(inplace=True)
+
+# --- Step 3: Encode text column ---
+le = LabelEncoder()
+df['sector'] = le.fit_transform(df['sector'])
+
+# --- Step 4: Define features and target ---
+X = df[['day','sector']]
+y = df['price']
+
+# --- Step 5: Split into train/test ---
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# --- Step 6: Train model ---
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# --- Step 7: Predict & evaluate ---
+y_pred = model.predict(X_test)
+print("R² Score:", r2_score(y_test, y_pred))
+print("MSE:", mean_squared_error(y_test, y_pred))
+
+# --- Step 8: Visualization ---
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Price')
+plt.ylabel('Predicted Price')
+plt.title('Stock Price Forecasting (Linear Regression)')
+plt.show()
+
+Question 9)
+# 🌾 Crop Yield Estimation Using Linear Regression
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import r2_score, mean_squared_error
+
+# --- Step 1: Create dataset ---
+data = {
+    'region': ['north','south','east','west','north','south','east','west','north','south'],
+    'rainfall': [200,220,250,300,320,350,400,420,450,480],
+    'temperature': [25,26,27,28,29,30,31,32,33,34],
+    'soil_quality': [6,7,7,8,8,9,9,9,10,10],
+    'yield': [2.1,2.3,2.6,3.0,3.3,3.8,4.2,4.5,4.8,5.0]
+}
+df = pd.DataFrame(data)
+df.to_csv('crop.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('crop.csv')
+
+# --- Step 3: Handle missing data ---
+df.dropna(inplace=True)
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+# --- Step 4: Encode text column ---
+le = LabelEncoder()
+df['region'] = le.fit_transform(df['region'])
+
+# --- Step 5: Features and Target ---
+X = df[['region','rainfall','temperature','soil_quality']]
+y = df['yield']
+
+# --- Step 6: Scale & Train/Test ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
+# --- Step 7: Evaluate ---
+print("R²:", r2_score(y_test, y_pred))
+print("MSE:", mean_squared_error(y_test, y_pred))
+plt.scatter(y_test, y_pred)
+plt.xlabel('Actual Yield')
+plt.ylabel('Predicted Yield')
+plt.title('Crop Yield Estimation')
+plt.show()
+
+
+Question 10)
+# ❤️ Heart Disease Risk Prediction Using Logistic Regression
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import classification_report, confusion_matrix
+
+# --- Step 1: Create dataset ---
+data = {
+    'gender': ['male','female','male','female','male','male','female','male','female','male'],
+    'age': [30,40,45,50,55,60,65,70,75,80],
+    'cholesterol': [180,190,200,210,220,230,240,250,260,270],
+    'bp': [120,125,130,135,140,145,150,155,160,165],
+    'disease': [0,0,0,0,1,1,1,1,1,1]
+}
+df = pd.DataFrame(data)
+df.to_csv('heart.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('heart.csv')
+
+# --- Step 3: Handle missing data ---
+df.dropna(inplace=True)
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+# --- Step 4: Encode text column ---
+le = LabelEncoder()
+df['gender'] = le.fit_transform(df['gender'])
+
+# --- Step 5: Define X and y ---
+X = df[['gender','age','cholesterol','bp']]
+y = df['disease']
+
+# --- Step 6: Scale, Split, Train ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+# --- Step 7: Evaluate ---
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap='Reds')
+plt.title('Heart Disease Prediction (Logistic Regression)')
+plt.show()
+Question 11)
+
+Q11. Fraud Detection in Financial Transactions (Random Forest)
+# 💳 Fraud Detection in Financial Transactions using Random Forest
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# --- Step 1: Create dataset ---
+data = {
+    'transaction_type': ['online','offline','online','offline','online','offline','online','offline','online','offline'],
+    'amount': [200, 1500, 12000, 500, 8000, 100, 6000, 750, 300, 15000],
+    'account_age_months': [2, 24, 6, 12, 8, 30, 3, 20, 1, 15],
+    'fraudulent': [1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+}
+df = pd.DataFrame(data)
+df.to_csv('fraud.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('fraud.csv')
+
+# --- Step 3: Handle missing data ---
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df.dropna(inplace=True)
+
+# --- Step 4: Encode text column ---
+le = LabelEncoder()
+df['transaction_type'] = le.fit_transform(df['transaction_type'])
+
+# --- Step 5: Define features and target ---
+X = df[['transaction_type','amount','account_age_months']]
+y = df['fraudulent']
+
+# --- Step 6: Scale and Split ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+
+# --- Step 7: Train model ---
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Step 8: Predict and evaluate ---
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred)*100, 2), "%")
+print("\nClassification Report:\n", classification_report(y_test, y_pred))
+
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm, annot=True, fmt='d', cmap='Reds')
+plt.title('Fraud Detection Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+________________________________________
+👩‍💼 Q12. Employee Attrition Prediction (Random Forest)
+# 👩‍💼 Employee Attrition Prediction using Random Forest
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# --- Step 1: Create dataset ---
+data = {
+    'department': ['HR','Sales','Tech','Tech','HR','Sales','Tech','HR','Sales','Tech'],
+    'job_satisfaction': [3,2,4,5,3,2,4,1,5,3],
+    'performance_score': [80,70,90,95,75,65,88,60,93,85],
+    'attrition': [0,1,0,0,1,1,0,1,0,0]
+}
+df = pd.DataFrame(data)
+df.to_csv('attrition.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('attrition.csv')
+
+# --- Step 3: Handle missing data ---
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df.dropna(inplace=True)
+
+# --- Step 4: Encode text column ---
+le = LabelEncoder()
+df['department'] = le.fit_transform(df['department'])
+
+# --- Step 5: Define X and y ---
+X = df[['department','job_satisfaction','performance_score']]
+y = df['attrition']
+
+# --- Step 6: Scale & Split ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+
+# --- Step 7: Train model ---
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Step 8: Evaluate ---
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred)*100, 2), "%")
+print(classification_report(y_test, y_pred))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap='Greens')
+plt.title('Employee Attrition Confusion Matrix')
+plt.show()
+________________________________________
+🌫️ Q13. Air Quality Classification (Random Forest)
+# 🌫️ Air Quality Classification using Random Forest
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# --- Step 1: Create dataset ---
+data = {
+    'pm25': [50,60,80,120,200,300,400,40,30,90],
+    'pm10': [80,100,150,200,300,400,500,60,50,170],
+    'temperature': [25,27,28,30,35,40,42,24,23,29],
+    'AQI_level': ['Good','Moderate','Poor','Poor','Severe','Severe','Hazardous','Good','Good','Moderate']
+}
+df = pd.DataFrame(data)
+df.to_csv('air_quality.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('air_quality.csv')
+
+# --- Step 3: Handle missing data ---
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df.dropna(inplace=True)
+
+# --- Step 4: Encode target variable ---
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['AQI_level'] = le.fit_transform(df['AQI_level'])
+
+# --- Step 5: Define X and y ---
+X = df[['pm25','pm10','temperature']]
+y = df['AQI_level']
+
+# --- Step 6: Scale & Split ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+
+# --- Step 7: Train model ---
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Step 8: Evaluate ---
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred)*100, 2), "%")
+print(classification_report(y_test, y_pred))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap='coolwarm')
+plt.title('Air Quality Classification Confusion Matrix')
+plt.show()
+________________________________________
+🛒 Q14. Product Recommendation System (Random Forest)
+# 🛒 Product Recommendation System using Random Forest
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# --- Step 1: Create dataset ---
+data = {
+    'user_age_group': ['teen','adult','adult','senior','teen','adult','senior','adult','teen','senior'],
+    'browsing_time_mins': [30,60,120,10,20,200,5,150,25,15],
+    'past_purchases': [2,4,10,1,0,12,0,8,1,0],
+    'recommendation': [1,1,1,0,0,1,0,1,0,0]
+}
+df = pd.DataFrame(data)
+df.to_csv('recommend.csv', index=False)
+
+# --- Step 2: Load dataset ---
+df = pd.read_csv('recommend.csv')
+
+# --- Step 3: Handle missing data ---
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df.dropna(inplace=True)
+
+# --- Step 4: Encode text column ---
+le = LabelEncoder()
+df['user_age_group'] = le.fit_transform(df['user_age_group'])
+
+# --- Step 5: Define X and y ---
+X = df[['user_age_group','browsing_time_mins','past_purchases']]
+y = df['recommendation']
+
+# --- Step 6: Scale & Split ---
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+
+# --- Step 7: Train model ---
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Step 8: Evaluate ---
+y_pred = model.predict(X_test)
+print("Accuracy:", round(accuracy_score(y_test, y_pred)*100, 2), "%")
+print(classification_report(y_test, y_pred))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', cmap='Purples')
+plt.title('Product Recommendation Confusion Matrix')
+plt.show()
+
+Question 15)
+Q15. Customer Segmentation for Marketing using K-Means
+# 🛍️ Customer Segmentation using K-Means Clustering
+# (Full 8-step version with both required visualizations)
+
+# --- Step 1: Import Libraries ---
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+# --- Step 2: Create & Load Dataset ---
+# (You can replace this with your own CSV later)
+data = {
+    'Customer_ID': [1,2,3,4,5,6,7,8,9,10],
+    'Age': [25,34,22,45,52,23,40,60,48,33],
+    'Annual_Income': [25,45,20,80,90,30,70,110,85,40],
+    'Spending_Score': [77,56,88,40,30,85,35,20,25,60]
+}
+df = pd.DataFrame(data)
+df.to_csv('customer_data.csv', index=False)
+
+# Load again as per exam instruction
+df = pd.read_csv('customer_data.csv')
+
+# --- Step 3: Data Cleaning ---
+df.fillna(df.mean(numeric_only=True), inplace=True)  # fill missing numerical values
+df.dropna(inplace=True)                              # drop any remaining nulls
+df.drop_duplicates(inplace=True)                     # remove duplicates if any
+
+# --- Step 4: Feature Selection & Scaling ---
+X = df[['Age', 'Annual_Income', 'Spending_Score']]   # select features for clustering
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# --- Step 5: Find Optimal k using Elbow Method ---
+inertia = []
+K = range(1, 8)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X_scaled)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(6,4))
+plt.plot(K, inertia, 'bo-')
+plt.title('Elbow Method to Find Optimal k')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+plt.show()
+
+# --- Step 6: Apply K-Means with chosen k ---
+# From elbow curve, assume k=3 is optimal
+kmeans = KMeans(n_clusters=3, random_state=42)
+df['Cluster'] = kmeans.fit_predict(X_scaled)
+
+# --- Step 7: Interpretation ---
+print("\nCluster Centers (Scaled):\n", kmeans.cluster_centers_)
+print("\nCluster Counts:\n", df['Cluster'].value_counts())
+print("\nSample Data with Cluster Labels:\n", df.head())
+
+# --- Step 8: Visualization of Final Clusters ---
+plt.figure(figsize=(7,5))
+sns.scatterplot(
+    x='Annual_Income', y='Spending_Score',
+    hue='Cluster', data=df, palette='Set1', s=100
+)
+plt.title('Customer Segmentation using K-Means')
+plt.xlabel('Annual Income (k$)')
+plt.ylabel('Spending Score (1–100)')
+plt.legend(title='Cluster')
+plt.show()
+
+
+Question 16 )
+Q16. Document Clustering for News Articles using K-Means
+# 📰 Document Clustering using TF-IDF + K-Means
+# (Full 8-step structured version with visualizations)
+
+# --- Step 1: Import Libraries ---
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+
+# --- Step 2: Create & Load Dataset ---
+data = {
+    'article': [
+        'The team won the football championship',
+        'Stock market hits record high this week',
+        'New technology trends in AI and robotics',
+        'Football players sign new contracts',
+        'Investors are buying more tech stocks',
+        'AI is transforming the finance industry',
+        'Soccer league expands with new teams',
+        'Economic growth driven by AI and startups'
+    ]
+}
+df = pd.DataFrame(data)
+df.to_csv('news_articles.csv', index=False)
+df = pd.read_csv('news_articles.csv')
+
+# --- Step 3: Clean Data ---
+df['article'].fillna('', inplace=True)
+df.drop_duplicates(inplace=True)
+
+# --- Step 4: Feature Extraction (TF-IDF) ---
+vectorizer = TfidfVectorizer(stop_words='english', max_features=1000)
+X = vectorizer.fit_transform(df['article'])
+
+# --- Step 5: Elbow Method to Find Optimal k ---
+inertia = []
+K = range(1, 6)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(6,4))
+plt.plot(K, inertia, 'bo-')
+plt.title('Elbow Method to Find Optimal k (Document Clustering)')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+plt.show()
+
+# --- Step 6: Apply K-Means (Assume k=2 based on Elbow) ---
+kmeans = KMeans(n_clusters=2, random_state=42)
+df['Cluster'] = kmeans.fit_predict(X)
+
+# --- Step 7: Interpretation ---
+print("\nCluster Assignments:\n", df)
+print("\nTop Terms per Cluster:")
+terms = vectorizer.get_feature_names_out()
+for i in range(2):
+    cluster_center = kmeans.cluster_centers_[i]
+    top_indices = cluster_center.argsort()[-5:][::-1]
+    print(f"Cluster {i}: {[terms[j] for j in top_indices]}")
+
+# --- Step 8: Visualization of Clusters (2D using PCA) ---
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X.toarray())
+
+plt.figure(figsize=(7,5))
+sns.scatterplot(
+    x=X_reduced[:,0], y=X_reduced[:,1],
+    hue=df['Cluster'], palette='viridis', s=100
+)
+plt.title('Document Clustering using TF-IDF + K-Means')
+plt.xlabel('PCA Component 1')
+plt.ylabel('PCA Component 2')
+plt.legend(title='Cluster')
+plt.show()
+Q17. Image Compression using K-Means
+we’ll follow the same 8-step pattern as before so you can remember it easily.
+________________________________________
+# 🖼️ Image Compression using K-Means
+# (Full 8-step version with both visualizations)
+
+# --- Step 1: Import Libraries ---
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from PIL import Image
+
+# --- Step 2: Load and Prepare Image Dataset ---
+# create a dummy image (you can replace with any image file)
+dummy_img = Image.new('RGB', (100, 100), color='orange')
+dummy_img.save('sample_image.jpg')
+img = Image.open('sample_image.jpg')
+
+plt.imshow(img)
+plt.title('Original Image')
+plt.axis('off')
+plt.show()
+
+# --- Step 3: Clean and Reshape Data ---
+# convert image to RGB pixel array
+img_data = np.array(img)
+w, h, d = img_data.shape
+pixels = img_data.reshape(-1, 3)  # each pixel as [R,G,B]
+
+# --- Step 4: Feature Scaling (optional) ---
+# since RGB values already range from 0–255, no scaling needed
+# but we can convert to float for better performance
+pixels = np.float32(pixels)
+
+# --- Step 5: Apply Elbow Method to Find Optimal k ---
+inertia = []
+K = range(1, 8)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(pixels)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(6,4))
+plt.plot(K, inertia, 'bo-')
+plt.title('Elbow Method for Optimal Colors (k)')
+plt.xlabel('Number of Color Clusters (k)')
+plt.ylabel('Inertia')
+plt.show()
+
+# --- Step 6: Apply K-Means (Assume k=4 for compression) ---
+kmeans = KMeans(n_clusters=4, random_state=42)
+labels = kmeans.fit_predict(pixels)
+new_colors = kmeans.cluster_centers_.astype('uint8')
+
+# --- Step 7: Reconstruct Compressed Image ---
+compressed_pixels = new_colors[labels]
+compressed_img = compressed_pixels.reshape(w, h, d)
+plt.imshow(compressed_img)
+plt.title('Compressed Image (4 Colors)')
+plt.axis('off')
+plt.show()
+
+# --- Step 8: Interpretation ---
+print("\n✅ Interpretation:")
+print("• K-Means groups similar pixel colors into clusters.")
+print("• Each cluster center represents one dominant color.")
+print("• Replacing each pixel with its cluster color reduces total color variety — compressing the image.")
+
+Q18. Traffic Pattern Analysis using K-Means
+________________________________________
+# 🚦 Traffic Pattern Analysis using K-Means
+# (Full 8-step structured version with both visualizations)
+
+# --- Step 1: Import Libraries ---
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
+# --- Step 2: Create & Load Dataset ---
+# sample synthetic GPS-style traffic data
+data = {
+    'Location_ID': range(1, 11),
+    'Latitude': [19.07, 19.09, 19.05, 19.13, 19.11, 19.04, 19.10, 19.14, 19.08, 19.12],
+    'Longitude': [72.87, 72.85, 72.90, 72.83, 72.82, 72.89, 72.86, 72.80, 72.88, 72.84],
+    'Avg_Speed': [45, 20, 50, 25, 15, 55, 35, 10, 40, 30],
+    'Traffic_Density': [30, 80, 25, 70, 90, 20, 40, 95, 35, 60]
+}
+df = pd.DataFrame(data)
+df.to_csv('traffic_data.csv', index=False)
+
+# Load dataset
+df = pd.read_csv('traffic_data.csv')
+
+# --- Step 3: Data Cleaning ---
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df.drop_duplicates(inplace=True)
+
+# --- Step 4: Feature Selection & Scaling ---
+X = df[['Latitude', 'Longitude', 'Avg_Speed', 'Traffic_Density']]
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# --- Step 5: Elbow Method to Determine Optimal k ---
+inertia = []
+K = range(1, 6)
+for k in K:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X_scaled)
+    inertia.append(kmeans.inertia_)
+
+plt.figure(figsize=(6,4))
+plt.plot(K, inertia, 'bo-')
+plt.title('Elbow Method for Optimal k - Traffic Clustering')
+plt.xlabel('Number of Clusters (k)')
+plt.ylabel('Inertia')
+plt.show()
+
+# --- Step 6: Apply K-Means Clustering (Assume k=3) ---
+kmeans = KMeans(n_clusters=3, random_state=42)
+df['Cluster'] = kmeans.fit_predict(X_scaled)
+
+# --- Step 7: Interpretation ---
+print("\nCluster Summary:")
+print(df.groupby('Cluster')[['Avg_Speed', 'Traffic_Density']].mean())
+
+print("\nCluster Assignments:\n", df[['Location_ID', 'Cluster']])
+
+# --- Step 8: Visualization ---
+plt.figure(figsize=(7,5))
+sns.scatterplot(
+    x='Avg_Speed', y='Traffic_Density',
+    hue='Cluster', data=df, palette='Set2', s=100
+)
+plt.title('Traffic Pattern Clusters')
+plt.xlabel('Average Speed (km/h)')
+plt.ylabel('Traffic Density (%)')
+plt.legend(title='Cluster')
+plt.show()
+
+Q19. Market Basket Analysis for Retail (Apriori Algorithm)
+# 🛒 Market Basket Analysis using Apriori Algorithm
+# (Full 8-step version with visualization)
+
+# --- Step 1: Import Libraries ---
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --- Step 2: Create and Load Dataset ---
+transactions = [
+    ['milk', 'bread', 'butter'],
+    ['bread', 'jam', 'milk'],
+    ['milk', 'bread', 'eggs'],
+    ['jam', 'butter'],
+    ['milk', 'bread', 'butter', 'jam']
+]
+df = pd.DataFrame(transactions)
+df.to_csv('retail.csv', index=False)
+df = pd.read_csv('retail.csv')
+
+# --- Step 3: Clean Missing Values ---
+transactions = [[item for item in row if pd.notna(item)] for row in df.values]
+# fill/drop demo for learning
+df.fillna('None', inplace=True)
+df.dropna(inplace=True)
+
+# --- Step 4: Encode Transactions ---
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+# --- Step 5: Generate Frequent Itemsets ---
+frequent_items = apriori(df_encoded, min_support=0.4, use_colnames=True)
+print("Frequent Itemsets:\n", frequent_items)
+
+# --- Step 6: Generate Association Rules ---
+rules = association_rules(frequent_items, metric='lift', min_threshold=1.0)
+print("\nAssociation Rules:\n", rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+# --- Step 7: Visualization ---
+plt.figure(figsize=(6,4))
+sns.scatterplot(data=rules, x='support', y='confidence', size='lift', hue='lift', palette='viridis', sizes=(50,200))
+plt.title('Market Basket Analysis: Support vs Confidence')
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.legend(title='Lift')
+plt.show()
+
+# --- Step 8: Interpretation ---
+print("\n✅ Interpretation:")
+print("Items like 'milk' and 'bread' often occur together with high confidence.")
+print("Lift > 1 indicates a strong positive association between items.")
+
+Q20. Web Navigation Pattern Mining
+# 🌐 Web Navigation Pattern Mining using Apriori
+
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --- Step 1: Create Dataset ---
+transactions = [
+    ['Home', 'Products', 'Cart', 'Checkout'],
+    ['Home', 'Products', 'About'],
+    ['Home', 'Products', 'Cart'],
+    ['Home', 'Blog', 'Products'],
+    ['Home', 'Products', 'Cart', 'Checkout']
+]
+df = pd.DataFrame(transactions)
+df.to_csv('web_navigation.csv', index=False)
+df = pd.read_csv('web_navigation.csv')
+
+# --- Step 2: Clean Data ---
+transactions = [[item for item in row if pd.notna(item)] for row in df.values]
+df.fillna('None', inplace=True)
+df.dropna(inplace=True)
+
+# --- Step 3: Encode Transactions ---
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+# --- Step 4: Apply Apriori ---
+frequent = apriori(df_encoded, min_support=0.4, use_colnames=True)
+rules = association_rules(frequent, metric='lift', min_threshold=1.0)
+
+# --- Step 5: Visualization ---
+sns.scatterplot(data=rules, x='support', y='confidence', size='lift', hue='lift', palette='mako', sizes=(40,150))
+plt.title('Web Navigation Pattern Analysis')
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.show()
+
+# --- Step 6: Interpretation ---
+print("\n✅ Interpretation:")
+print("Users visiting 'Products' often continue to 'Cart' and 'Checkout'.")
+print("These navigation paths can improve website design.")
+________________________________________
+💊 Q21. Medical Prescription Pattern Discovery
+# 💊 Medical Prescription Pattern Discovery
+
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+transactions = [
+    ['Paracetamol', 'Vitamin C'],
+    ['Paracetamol', 'Cough Syrup'],
+    ['Antibiotic', 'Vitamin C'],
+    ['Paracetamol', 'Antibiotic'],
+    ['Cough Syrup', 'Vitamin C']
+]
+df = pd.DataFrame(transactions)
+transactions = [[item for item in row if pd.notna(item)] for row in df.values]
+
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+frequent = apriori(df_encoded, min_support=0.4, use_colnames=True)
+rules = association_rules(frequent, metric='lift', min_threshold=1.0)
+
+plt.figure(figsize=(6,4))
+sns.scatterplot(data=rules, x='support', y='confidence', size='lift', hue='lift', palette='coolwarm', sizes=(50,200))
+plt.title('Prescription Pattern Discovery')
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.show()
+
+print("\n✅ Interpretation:")
+print("Drugs like 'Paracetamol' and 'Vitamin C' are often prescribed together.")
+________________________________________
+🎓 Q22. Online Course Recommendation
+# 🎓 Online Course Recommendation using Association Rules
+
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+transactions = [
+    ['Python', 'Machine Learning'],
+    ['Python', 'Data Science'],
+    ['Data Science', 'Deep Learning'],
+    ['Python', 'AI'],
+    ['AI', 'Machine Learning']
+]
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+frequent = apriori(df_encoded, min_support=0.4, use_colnames=True)
+rules = association_rules(frequent, metric='lift', min_threshold=1.0)
+
+sns.scatterplot(data=rules, x='support', y='confidence', size='lift', hue='lift', palette='viridis', sizes=(50,200))
+plt.title('Online Course Recommendation (Apriori)')
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.show()
+
+print("\n✅ Interpretation:")
+print("Students taking 'Python' are highly likely to enroll in 'Machine Learning' or 'Data Science' courses.")
+________________________________________
+🛍️ Q23. Retail Loss Prevention
+# 🛍️ Retail Loss Prevention using Association Rules
+
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+transactions = [
+    ['Razor', 'Shaving Cream'],
+    ['Razor', 'Perfume'],
+    ['Razor', 'Shaving Cream', 'Perfume'],
+    ['Chocolate', 'Chips'],
+    ['Razor', 'Chips']
+]
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+frequent = apriori(df_encoded, min_support=0.4, use_colnames=True)
+rules = association_rules(frequent, metric='lift', min_threshold=1.0)
+
+sns.scatterplot(data=rules, x='support', y='confidence', size='lift', hue='lift', palette='plasma', sizes=(40,200))
+plt.title('Retail Loss Prevention Pattern')
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.show()
+
+print("\n✅ Interpretation:")
+print("Unusual item combinations (e.g., 'Razor' and 'Perfume') might signal suspicious buying behavior.")
+
+Q24. Predictive Maintenance Using Classification and Regression
+Scenario:
+A manufacturing plant wants to detect machine failures (classification) and estimate time-to-failure (regression).
+We’ll generate a small synthetic dataset and demonstrate both parts step by step.
+________________________________________
+# ⚙️ Predictive Maintenance using Classification + Regression
+# (8-step combined version)
+
+# --- Step 1: Import Libraries ---
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.metrics import accuracy_score, mean_squared_error, confusion_matrix, classification_report
+
+# --- Step 2: Create Dataset ---
+data = {
+    'Temperature': [70, 80, 85, 90, 60, 95, 75, 100, 65, 88],
+    'Vibration': [0.3, 0.8, 1.0, 1.2, 0.2, 1.5, 0.5, 1.8, 0.4, 1.1],
+    'Pressure': [30, 40, 45, 50, 25, 55, 35, 60, 28, 48],
+    'Failure': [0, 1, 1, 1, 0, 1, 0, 1, 0, 1],           # Classification target
+    'Time_to_Failure': [20, 5, 8, 3, 25, 2, 15, 1, 18, 4]  # Regression target
+}
+df = pd.DataFrame(data)
+df.to_csv('machine_data.csv', index=False)
+df = pd.read_csv('machine_data.csv')
+
+# --- Step 3: Handle Missing Values ---
+df.fillna(df.mean(numeric_only=True), inplace=True)
+df.drop_duplicates(inplace=True)
+
+# --- Step 4: Define Features and Targets ---
+X = df[['Temperature', 'Vibration', 'Pressure']]
+y_class = df['Failure']
+y_reg = df['Time_to_Failure']
+
+# --- Step 5: Split & Scale ---
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_train, X_test, y_class_train, y_class_test = train_test_split(X_scaled, y_class, test_size=0.3, random_state=42, stratify=y_class)
+_, _, y_reg_train, y_reg_test = train_test_split(X_scaled, y_reg, test_size=0.3, random_state=42)
+
+# --- Step 6: Train Models ---
+clf = RandomForestClassifier(random_state=42)
+reg = RandomForestRegressor(random_state=42)
+clf.fit(X_train, y_class_train)
+reg.fit(X_train, y_reg_train)
+
+# --- Step 7: Evaluate ---
+# Classification
+y_class_pred = clf.predict(X_test)
+print("\n--- Classification Results ---")
+print("Accuracy:", round(accuracy_score(y_class_test, y_class_pred)*100, 2), "%")
+print(classification_report(y_class_test, y_class_pred))
+
+# Regression
+y_reg_pred = reg.predict(X_test)
+print("\n--- Regression Results ---")
+print("RMSE:", round(np.sqrt(mean_squared_error(y_reg_test, y_reg_pred)), 2))
+
+# --- Step 8: Visualize ---
+plt.figure(figsize=(6,4))
+sns.heatmap(confusion_matrix(y_class_test, y_class_pred), annot=True, cmap='Blues', fmt='d')
+plt.title('Confusion Matrix - Machine Failure Prediction')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+plt.figure(figsize=(6,4))
+plt.scatter(y_reg_test, y_reg_pred, color='orange')
+plt.title('Actual vs Predicted Time-to-Failure')
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.show()
+
+Q25. Healthcare Personalization Using Clustering & Association Rules
+Scenario:
+A health provider wants to cluster patients by symptoms (K-Means) and mine treatment patterns (Apriori).
+________________________________________
+# 🏥 Healthcare Personalization using Clustering + Association Rules
+# (8-step combined version)
+
+# --- Step 1: Import Libraries ---
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --- Step 2: Create Dataset ---
+data = {
+    'Fever': [1, 0, 1, 0, 1, 1, 0, 1],
+    'Cough': [1, 1, 0, 0, 1, 1, 0, 1],
+    'Fatigue': [0, 1, 1, 0, 1, 1, 0, 0],
+    'Headache': [1, 1, 1, 0, 0, 1, 0, 0],
+    'Treatment': [
+        ['Paracetamol', 'Rest'],
+        ['Cough Syrup'],
+        ['Antibiotic', 'Rest'],
+        ['Hydration'],
+        ['Paracetamol', 'Antibiotic'],
+        ['Rest'],
+        ['Hydration', 'Vitamin C'],
+        ['Antibiotic']
+    ]
+}
+df = pd.DataFrame(data)
+df.to_csv('patients.csv', index=False)
+df = pd.read_csv('patients.csv')
+
+# --- Step 3: Cluster Patients by Symptoms ---
+symptoms = df[['Fever', 'Cough', 'Fatigue', 'Headache']]
+scaler = StandardScaler()
+symptoms_scaled = scaler.fit_transform(symptoms)
+
+# --- Step 4: Apply K-Means ---
+kmeans = KMeans(n_clusters=2, random_state=42)
+df['Cluster'] = kmeans.fit_predict(symptoms_scaled)
+
+# --- Step 5: Visualize Clusters ---
+sns.scatterplot(data=df, x='Fever', y='Cough', hue='Cluster', palette='Set2', s=100)
+plt.title('Patient Clusters by Symptoms')
+plt.show()
+
+# --- Step 6: Association Rule Mining (on treatments) ---
+transactions = data['Treatment']
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+frequent_items = apriori(df_encoded, min_support=0.3, use_colnames=True)
+rules = association_rules(frequent_items, metric='lift', min_threshold=1.0)
+
+# --- Step 7: Visualize Association Rules ---
+plt.figure(figsize=(6,4))
+sns.scatterplot(data=rules, x='support', y='confidence', size='lift', hue='lift', palette='viridis', sizes=(50,200))
+plt.title('Treatment Pattern Associations')
+plt.xlabel('Support')
+plt.ylabel('Confidence')
+plt.legend(title='Lift')
+plt.show()
+
+# --- Step 8: Interpretation ---
+print("\n✅ Interpretation:")
+print("Patients are grouped by symptoms (clusters). Within each group, association rules reveal which treatments frequently occur together.")
+
+

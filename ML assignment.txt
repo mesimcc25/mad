@@ -1,0 +1,614 @@
+Q1) Medical Diagnosis using SVM
+import numpy as np
+from sklearn import svm
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+# Simulate a medical dataset with 100 samples and 2 features. The labels are 0 for benign and 1 for malignant.
+np.random.seed(0)
+X = np.random.randn(100, 2)
+y = (X[:, 0] + X[:, 1] > 0.5).astype(int)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = svm.SVC(kernel='rbf', C=1.0)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q2) Loan Default Prediction using DecisionTree
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset (simulates real-world data)
+data = {
+    'credit_score': [720, 650, 800, 580, 750, 620, 780, 550, 680, 710],
+    'annual_income_k': [60, 45, 90, 35, 80, 50, 100, 30, 70, 65],
+    'employment_years': [5, 2, 10, 1, 7, 3, 12, 0, 4, 6],
+    'loan_default': [0, 1, 0, 1, 0, 1, 0, 1, 0, 0] # 0 = No Default, 1 = Default
+}
+df = pd.DataFrame(data)
+X = df[['credit_score', 'annual_income_k', 'employment_years']]
+y = df['loan_default']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+model = DecisionTreeClassifier(max_depth=3, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q3) Disease classification using KNN
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
+#  Create a synthetic dataset with features and a target variable
+data = {
+    'glucose': np.random.randint(70, 200, size=50),
+    'bmi': np.random.uniform(18, 40, size=50),
+    'age': np.random.randint(20, 70, size=50),
+    'diabetes': np.random.randint(0, 2, size=50) # 0 = No Diabetes, 1 = Diabetes
+}
+df = pd.DataFrame(data)
+X = df[['glucose', 'bmi', 'age']]
+y = df['diabetes']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train_scaled, y_train)
+y_pred = knn.predict(X_test_scaled)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q4) Email Spam Detection using Naïve Bayes
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates a real dataset of email text and their labels
+data = {
+    'text': [
+        'Free entry to a contest! Win a prize now.', 'Get your free prize now!', 'Special offer just for you.',
+        'Hello, are we still on for the meeting?', 'I am sending you the report.', 'Please review the document and let me know.'
+    ],
+    'label': ['spam', 'spam', 'spam', 'ham', 'ham', 'ham'] # 'spam' or 'ham' (not spam)
+}
+df = pd.DataFrame(data)
+vectorizer = CountVectorizer()   # CountVectorizer tokenizes the text and counts word occurrences
+X = vectorizer.fit_transform(df['text'])
+y = df['label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
+model = MultinomialNB()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q5) Customer Sentiment Analysis using SVM
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates customer reviews and their sentiment labels
+data = {
+    'review': [
+        'The product is fantastic! I love it.',
+        'This is a great purchase, highly recommend.',
+        'It was a terrible experience, so disappointed.',
+        'I am not happy with this item.',
+        'Great value for money.',
+        'The quality is very poor.'
+    ],
+    'sentiment': ['positive', 'positive', 'negative', 'negative', 'positive', 'negative']
+}
+df = pd.DataFrame(data)
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(df['review'])
+y = df['sentiment']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
+model = SVC(kernel='linear')
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q6) House Price Prediction using Linear Regression
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates a real dataset with features and a target variable (price)
+np.random.seed(0)
+data = {
+    'sq_feet': np.random.randint(800, 3500, size=50),
+    'bedrooms': np.random.randint(1, 6, size=50),
+    'bathrooms': np.random.randint(1, 4, size=50),
+    'age_years': np.random.randint(1, 50, size=50),
+}
+df = pd.DataFrame(data)
+df['price'] = (df['sq_feet'] * 150) + (df['bedrooms'] * 10000) + (df['bathrooms'] * 5000) - (df['age_years'] * 500) + np.random.normal(0, 50000, size=50)
+X = df[['sq_feet', 'bedrooms', 'bathrooms', 'age_years']]
+y = df['price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q7)  Churn Probability using Logistic Regression
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates customer data with features and a churn status
+np.random.seed(0)
+data = {
+    'monthly_bill': np.random.uniform(20, 150, size=100),
+    'minutes_used': np.random.uniform(100, 1000, size=100),
+    'customer_service_calls': np.random.randint(0, 6, size=100)
+}
+df = pd.DataFrame(data)
+df['churn'] = ((df['monthly_bill'] > 100) | (df['minutes_used'] < 250) | (df['customer_service_calls'] > 3)).astype(int)
+X = df[['monthly_bill', 'minutes_used', 'customer_service_calls']]
+y = df['churn']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+model = LogisticRegression(solver='liblinear')
+model.fit(X_train, y_train)
+y_pred_proba = model.predict_proba(X_test)[:, 1]
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q8) Stock Price Forecasting with Least Squares
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates historical stock data over a period of days
+np.random.seed(0)
+days = np.arange(1, 101)
+prices = 50 + (0.5 * days) + np.random.normal(0, 5, size=100)
+df = pd.DataFrame({'Day': days, 'Price': prices})
+X = df[['Day']]
+y = df['Price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q9) Crop Yield Estimation using Linear Regression
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates data for different farms/years
+np.random.seed(0)
+data = {
+    'rainfall_mm': np.random.randint(400, 1000, size=100),
+    'avg_temp_c': np.random.uniform(15, 30, size=100),
+    'soil_quality_index': np.random.uniform(0.1, 1.0, size=100)
+}
+df = pd.DataFrame(data)
+df['yield_ton_ha'] = (df['rainfall_mm'] * 0.05) + (df['avg_temp_c'] * 0.8) + (df['soil_quality_index'] * 15) + np.random.normal(0, 5, size=100)
+X = df[['rainfall_mm', 'avg_temp_c', 'soil_quality_index']]
+y = df['yield_ton_ha']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+model = LinearRegression()
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q10) Heart Disease Risk Prediction with Logistic Regression
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates patient data with health metrics and heart disease status
+np.random.seed(0)
+data = {
+    'age': np.random.randint(30, 70, size=100),
+    'cholesterol': np.random.randint(150, 250, size=100),
+    'blood_pressure': np.random.randint(120, 180, size=100),
+    'max_heart_rate': np.random.randint(100, 200, size=100)
+}
+df = pd.DataFrame(data)
+df['heart_disease'] = ((df['age'] > 55) | (df['cholesterol'] > 220) | (df['blood_pressure'] > 150) | (df['max_heart_rate'] < 120)).astype(int)
+X = df[['age', 'cholesterol', 'blood_pressure', 'max_heart_rate']]
+y = df['heart_disease']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+model = LogisticRegression(solver='liblinear')
+model.fit(X_train, y_train)
+y_pred_proba = model.predict_proba(X_test)[:, 1] # Probability of heart disease
+y_pred = model.predict(X_test) # Final class prediction (0 or 1)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q11) Fraud Detection in Financial Transactions
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates transaction data with features and a 'is_fraud' label
+np.random.seed(0)
+data = {
+    'transaction_amount': np.random.uniform(10, 5000, size=1000),
+    'transaction_hour': np.random.randint(0, 24, size=1000),
+    'is_international': np.random.randint(0, 2, size=1000),
+}
+df = pd.DataFrame(data)
+df['is_fraud'] = ((df['transaction_amount'] > 4000) | (df['is_international'] == 1) & (df['transaction_hour'] >= 22) | (df['transaction_hour'] <= 5)).astype(int)
+X = df[['transaction_amount', 'transaction_hour', 'is_international']]
+y = df['is_fraud']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q12) Employee Attrition Retention
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates employee data with features and an 'attrition' label
+np.random.seed(0)
+data = {
+    'job_satisfaction': np.random.randint(1, 5, size=200),
+    'performance_score': np.random.uniform(0.5, 1.0, size=200),
+    'years_at_company': np.random.randint(1, 10, size=200),
+    'salary_hike_perc': np.random.uniform(0.01, 0.1, size=200)
+}
+df = pd.DataFrame(data)
+df['attrition'] = ((df['job_satisfaction'] < 2) | (df['performance_score'] < 0.7) | (df['salary_hike_perc'] < 0.03)).astype(int)
+X = df[['job_satisfaction', 'performance_score', 'years_at_company', 'salary_hike_perc']]
+y = df['attrition']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+model = RandomForestClassifier(n_estimators=100, random_state=42, class_weight='balanced')
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred)) 
+
+
+Q13) Air Quality Classification
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates sensor data for pollution and a corresponding AQI category
+np.random.seed(0)
+data = {
+    'co_level': np.random.uniform(0.1, 5.0, size=200),
+    'ozone_level': np.random.uniform(0.01, 0.1, size=200),
+    'so2_level': np.random.uniform(0.001, 0.05, size=200)
+}
+df = pd.DataFrame(data)
+def categorize_aqi(row):
+    if row['co_level'] > 3.0 or row['ozone_level'] > 0.08:
+        return 2  # Unhealthy
+    elif row['co_level'] > 1.5 or row['ozone_level'] > 0.05:
+        return 1  # Moderate
+    else:
+        return 0  # Good
+df['AQI_category'] = df.apply(categorize_aqi, axis=1)
+X = df[['co_level', 'ozone_level', 'so2_level']]
+y = df['AQI_category']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q14) Product Recommendation System
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+# Create a synthetic dataset that simulates user interactions (browsing/purchase history)
+np.random.seed(0)
+data = {
+    'user_id': np.random.randint(1, 101, size=500),
+    'product_id': np.random.randint(1, 51, size=500),
+    'browsed_count': np.random.randint(0, 10, size=500),
+    'added_to_cart': np.random.randint(0, 2, size=500),
+    # Target variable: 'liked' (1) or 'not liked' (0)
+    'liked': np.random.randint(0, 2, size=500)
+}
+df = pd.DataFrame(data)
+df['liked'] = ((df['browsed_count'] > 5) | (df['added_to_cart'] == 1)).astype(int)
+X = df[['browsed_count', 'added_to_cart']]
+y = df['liked']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+Q15) Customer Segmentation for Marketing
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+# Create a synthetic dataset that simulates customer data with features like 'Age' and 'Annual_Income'
+np.random.seed(0)
+data = {
+    'age': np.random.randint(18, 70, size=200),
+    'annual_income_k': np.random.randint(20, 150, size=200),
+    'spending_score': np.random.randint(1, 100, size=200)
+}
+df = pd.DataFrame(data)
+X = df[['annual_income_k', 'spending_score']]
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+sse = []
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+    kmeans.fit(X_scaled)
+    sse.append(kmeans.inertia_)
+optimal_k = 4
+kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+df['cluster'] = kmeans.fit_predict(X_scaled)
+# Analyze the characteristics of each segment
+cluster_summary = df.groupby('cluster').agg({
+    'age': 'mean',
+    'annual_income_k': 'mean',
+    'spending_score': 'mean',
+    'cluster': 'count'
+}).rename(columns={'cluster': 'count'}).reset_index()
+print(cluster_summary)
+
+Q16) Document Clustering for News Articles
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+# Create a synthetic dataset that represents news articles on different topics
+documents = [
+    "U.S. economy shows signs of growth.", "Stocks rally on positive economic data.", "Federal Reserve raises interest rates.",
+    "SpaceX launches new satellite into orbit.", "NASA discovers a new exoplanet.", "Telescope captures stunning image of a nebula.",
+    "Lakers defeat Celtics in NBA finals.", "Messi scores a goal to win the match.", "Team wins the World Cup title.",
+]
+df = pd.DataFrame({'text': documents})
+vectorizer = TfidfVectorizer(stop_words='english')
+X = vectorizer.fit_transform(df['text'])
+num_clusters = 3
+kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
+df['cluster'] = kmeans.fit_predict(X)
+# Print the documents with their assigned cluster
+for i, doc in enumerate(documents):
+    print(f"Document: {doc} | Cluster: {df['cluster'][i]}")
+
+Q17) Image Compression Using K-Means
+import numpy as np
+from PIL import Image
+from sklearn.cluster import KMeans
+# Load an image and reshape it for K-Means
+def load_and_reshape_image(image_path):
+    img = Image.open(image_path).convert("RGB")
+    width, height = img.size
+    pixels = np.array(img).reshape(-1, 3)
+    return pixels, width, height
+# Apply K-Means to cluster colors and reconstruct the image
+def compress_image_with_kmeans(pixels, width, height, n_colors):
+    kmeans = KMeans(n_clusters=n_colors, random_state=42, n_init=10)
+    kmeans.fit(pixels)
+    new_colors = kmeans.cluster_centers_.astype(int)
+    labels = kmeans.predict(pixels)
+    reconstructed_pixels = new_colors[labels]
+    reconstructed_image_array = reconstructed_pixels.reshape(height, width, 3)
+    return Image.fromarray(np.uint8(reconstructed_image_array))
+if __name__ == '__main__':
+    # Create a dummy image for demonstration
+    dummy_img = Image.new('RGB', (100, 100), color='red')
+    dummy_img.save('sample_image.jpg')
+    image_file = 'sample_image.jpg'
+    num_colors = 16
+    pixels, width, height = load_and_reshape_image(image_file)
+    compressed_img = compress_image_with_kmeans(pixels, width, height, num_colors)
+    original_img = Image.open(image_file)
+    plt.subplot(1, 2, 1)
+    plt.imshow(original_img)
+    plt.subplot(1, 2, 2)
+    plt.imshow(compressed_img)
+
+Q18) Traffic Pattern Analysis
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+# Create a synthetic dataset that simulates GPS data for vehicles over a period
+np.random.seed(0)
+data = {
+    'latitude': np.random.uniform(34.0, 34.1, size=500),
+    'longitude': np.random.uniform(-118.3, -118.2, size=500),
+    'hour': np.random.uniform(0, 24, size=500)
+}
+df = pd.DataFrame(data)
+df.loc[100:200, ['latitude', 'longitude']] = np.random.uniform(34.05, 34.06, size=(101, 2))
+df.loc[300:400, ['latitude', 'longitude']] = np.random.uniform(34.08, 34.09, size=(101, 2))
+df.loc[250:350, 'hour'] = np.random.uniform(7, 9, size=101) # Morning peak
+df.loc[50:150, 'hour'] = np.random.uniform(17, 19, size=101) # Evening peak
+X = df[['latitude', 'longitude', 'hour']]
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+num_clusters = 3
+kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
+df['cluster'] = kmeans.fit_predict(X_scaled)
+cluster_summary = df.groupby('cluster').agg({
+    'latitude': 'mean',
+    'longitude': 'mean',
+    'hour': 'mean',
+    'cluster': 'count'
+}).rename(columns={'cluster': 'count'})
+print(cluster_summary)
+
+
+Q19) Market Basket Analysis for Retail
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+# Create a synthetic dataset of transactions
+transactions = [
+    ['milk', 'bread', 'butter'],
+    ['milk', 'diapers', 'beer', 'eggs'],
+    ['bread', 'butter', 'diapers'],
+    ['milk', 'bread', 'diapers', 'beer'],
+    ['milk', 'bread', 'eggs', 'beer'],
+    ['bread', 'butter', 'eggs']
+]
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+frequent_itemsets = apriori(df_encoded, min_support=0.5, use_colnames=True)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+Q20) Web Navigation Pattern Mining
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+# Create a synthetic dataset 
+sessions = [
+    ['homepage', 'about', 'contact'],
+    ['homepage', 'products', 'product_A'],
+    ['homepage', 'products', 'product_B', 'add_to_cart'],
+    ['products', 'product_B', 'add_to_cart'],
+    ['homepage', 'about', 'services'],
+    ['products', 'product_A', 'add_to_cart'],
+    ['homepage', 'products', 'product_A', 'add_to_cart']
+]
+te = TransactionEncoder()
+te_ary = te.fit(sessions).transform(sessions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+frequent_itemsets = apriori(df_encoded, min_support=0.3, use_colnames=True)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.6)
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+Q21) Medical Prescription Pattern Discovery
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+# Create a synthetic dataset
+prescriptions = [
+    ['Drug A', 'Drug B', 'Drug C'],
+    ['Drug A', 'Drug B', 'Drug D'],
+    ['Drug B', 'Drug C', 'Drug E'],
+    ['Drug A', 'Drug C', 'Drug E'],
+    ['Drug A', 'Drug B', 'Drug C', 'Drug E']
+]
+te = TransactionEncoder()
+te_ary = te.fit(prescriptions).transform(prescriptions)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+frequent_itemsets = apriori(df_encoded, min_support=0.6, use_colnames=True)
+print(frequent_itemsets)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.8)
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+Q22) Online Course Recommendation
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+# Create a synthetic dataset of user enrollments
+enrollments = [
+    ['ML', 'Python', 'Data_Science'],
+    ['Python', 'Data_Science', 'SQL'],
+    ['Java', 'Algorithms', 'Data_Structures'],
+    ['ML', 'Python', 'Algorithms'],
+    ['Data_Science', 'SQL', 'Tableau'],
+    ['Python', 'ML', 'SQL']
+]
+te = TransactionEncoder()
+te_ary = te.fit(enrollments).transform(enrollments)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+frequent_itemsets = apriori(df_encoded, min_support=0.5, use_colnames=True)
+print(frequent_itemsets)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.7)
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+Q23) Retail Loss Prevention
+import pandas as pd
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+# Create a synthetic dataset of suspicious transactions
+suspicious_baskets = [
+    ['high-value electronics', 'tools'],
+    ['high-value electronics', 'scissors'],
+    ['razor blades', 'soda'], # Unlikely combination
+    ['tools', 'razor blades'],
+    ['scissors', 'tools', 'high-value electronics']
+]
+te = TransactionEncoder()
+te_ary = te.fit(suspicious_baskets).transform(suspicious_baskets)
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+frequent_itemsets = apriori(df_encoded, min_support=0.4, use_colnames=True)
+print(frequent_itemsets)
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.6)
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+Q24) Predictive Maintenance Using Classification and Regression
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import classification_report
+# Create a synthetic dataset
+np.random.seed(0)
+df = pd.DataFrame({
+    'sensor_reading': np.random.uniform(10, 50, 200),
+    'temp_c': np.random.uniform(20, 100, 200)
+})
+df['failure_type'] = np.where((df['temp_c'] > 90) & (df['sensor_reading'] < 20), 2,
+                             np.where((df['temp_c'] > 80) & (df['sensor_reading'] < 30), 1, 0))
+df['time_to_failure_days'] = 100 - (df['temp_c'] * 0.5) - (df['sensor_reading'] * 0.2) + np.random.normal(0, 5, 200)
+X_class = df[['sensor_reading', 'temp_c']]
+y_class = df['failure_type']
+X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_class, y_class, test_size=0.3, random_state=42)
+classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+classifier.fit(X_train_c, y_train_c)
+y_pred_c = classifier.predict(X_test_c)
+X_reg = df[df['failure_type'] > 0][['sensor_reading', 'temp_c']]
+y_reg = df[df['failure_type'] > 0]['time_to_failure_days']
+X_train_r, X_test_r, y_train_r, y_test_r = train_test_split(X_reg, y_reg, test_size=0.3, random_state=42)
+regressor = LinearRegression()
+regressor.fit(X_train_r, y_train_r)
+y_pred_r = regressor.predict(X_test_r)
+
+Q25) Healthcare Personalization Using Clustering and Association Rules
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from mlxtend.frequent_patterns import apriori, association_rules
+from mlxtend.preprocessing import TransactionEncoder
+# Create a synthetic patient dataset
+np.random.seed(0)
+patient_data = pd.DataFrame({
+    'symptom_A': np.random.uniform(1, 10, 100),
+    'symptom_B': np.random.uniform(1, 10, 100)
+})
+X_symptoms = patient_data[['symptom_A', 'symptom_B']]
+scaler = StandardScaler()
+X_symptoms_scaled = scaler.fit_transform(X_symptoms)
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+patient_data['cluster'] = kmeans.fit_predict(X_symptoms_scaled)
+def assign_treatments(row):
+    if row['cluster'] == 0: return ['Treatment_X', 'Treatment_Y']
+    elif row['cluster'] == 1: return ['Treatment_A', 'Treatment_B']
+    else: return ['Treatment_D', 'Treatment_E']
+patient_data['treatments'] = patient_data.apply(assign_treatments, axis=1)
+for cluster_id in sorted(patient_data['cluster'].unique()):
+    cluster_treatments = patient_data[patient_data['cluster'] == cluster_id]['treatments'].tolist()
+    te = TransactionEncoder()
+    df_encoded = pd.DataFrame(te.fit(cluster_treatments).transform(cluster_treatments), columns=te.columns_)
+    frequent_itemsets = apriori(df_encoded, min_support=0.2, use_colnames=True)
+    rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
+    if not rules.empty:
+        print(rules[['antecedents', 'consequents', 'support', 'confidence']])
+    else:
+        print("No significant rules found.")
